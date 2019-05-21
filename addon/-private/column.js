@@ -1,13 +1,13 @@
 import Ember from 'ember';
 
+import { A } from '@ember/array';
 const {
   observer,
   computed,
   isEmpty,
   Object: O,
   set,
-  get,
-  A
+  get
 } = Ember;
 
 
