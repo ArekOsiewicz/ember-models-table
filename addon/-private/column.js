@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-import { EmberArray } from '@ember/array';
+import { A as EmberArray } from '@ember/array';
 const {
   observer,
   computed,
