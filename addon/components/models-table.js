@@ -3,7 +3,7 @@ import fmt from '../utils/fmt';
 import assignPoly from '../utils/assign-poly';
 import betterCompare from '../utils/better-compare';
 import { A as EmberArray } from '@ember/array';
-import jQuery as jQ from 'jquery';
+import { jQuery as jQ } from 'jquery';
 
 import layout from '../templates/components/models-table';
 import ModelsTableColumn from '../-private/column';
