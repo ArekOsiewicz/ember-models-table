@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-import { A } from '@ember/array';
+import { EmberArray } from '@ember/array';
 const {
   observer,
   computed,
@@ -64,7 +64,7 @@ export default O.extend({
     if (!filterWithSelect || isEmpty(filterOptions)) {
       return;
     }
-    const filterOptionExists = A(filterOptions).find(option => {
+    const filterOptionExists = EmberArray(filterOptions).find(option => {
       const value = get(option, 'value');
       return [value, '' + value].indexOf(filterString) !== -1;
     });

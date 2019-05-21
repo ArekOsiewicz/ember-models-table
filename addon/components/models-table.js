@@ -2,6 +2,8 @@ import Ember from 'ember';
 import fmt from '../utils/fmt';
 import assignPoly from '../utils/assign-poly';
 import betterCompare from '../utils/better-compare';
+import { EmberArray } from '@ember/array';
+import jQ from 'jquery';
 
 import layout from '../templates/components/models-table';
 import ModelsTableColumn from '../-private/column';
@@ -27,7 +29,6 @@ const {
   observer,
   isNone,
   isBlank,
-  A,
   on,
   compare,
   typeOf,
@@ -36,7 +37,6 @@ const {
   assert,
   String: S,
   Object: O,
-  $: jQ,
   isArray,
   Logger: {warn}
 } = Ember;
@@ -151,12 +151,12 @@ function getFilterOptionsCP(propertyName) {
     let predefinedFilterOptions = get(this, 'predefinedFilterOptions');
     let filterWithSelect = get(this, 'filterWithSelect');
     if (filterWithSelect && 'array' !== typeOf(predefinedFilterOptions)) {
-      let _data = A(A(data).compact());
-      let options = A(_data.mapBy(propertyName)).compact();
+      let _data = EmberArray(EmberArray(data).compact());
+      let options = EmberArray(_data.mapBy(propertyName)).compact();
       if (get(this, 'sortFilterOptions')) {
         options = options.sort();
       }
-      return A(['', ...options]).uniq().map(optionStrToObj);
+      return EmberArray(['', ...options]).uniq().map(optionStrToObj);
     }
     return [];
   });
@@ -194,7 +194,7 @@ export default Component.extend({
    * @default []
    */
   sortProperties: computed(function() {
-    return A([]);
+    return EmberArray([]);
   }),
 
   /**
@@ -306,7 +306,7 @@ export default Component.extend({
    * @default ['propertyName', 'template']
    */
   columnFieldsToCheckUpdate: computed(function() {
-    return A(['propertyName', 'template']);
+    return EmberArray(['propertyName', 'template']);
   }),
 
   /**
@@ -317,7 +317,7 @@ export default Component.extend({
    * @default []
    */
   data: computed(function() {
-    return A([]);
+    return EmberArray([]);
   }),
 
   /**
@@ -328,7 +328,7 @@ export default Component.extend({
    * @default []
    */
   columns: computed(function() {
-    return A([]);
+    return EmberArray([]);
   }),
 
   /**
@@ -339,7 +339,7 @@ export default Component.extend({
    * @default []
    */
   columnSets: computed(function() {
-    return A([]);
+    return EmberArray([]);
   }),
 
   /**
@@ -348,7 +348,7 @@ export default Component.extend({
    * @default []
    */
   processedColumns: computed(function() {
-    return A([]);
+    return EmberArray([]);
   }),
 
   /**
@@ -383,7 +383,7 @@ export default Component.extend({
    * @name ModelsTable#groupedHeaders
    */
   groupedHeaders: computed(function() {
-    return A([]);
+    return EmberArray([]);
   }),
 
   /**
@@ -697,7 +697,7 @@ export default Component.extend({
     } = getProperties(this, 'pagesCount', 'currentPageNumber');
     const notLinkLabel = '...';
     let groups = []; // array of 8 numbers
-    let labels = A([]);
+    let labels = EmberArray([]);
     groups[0] = 1;
     groups[1] = Math.min(1, pagesCount);
     groups[6] = Math.max(1, pagesCount);
@@ -724,7 +724,7 @@ export default Component.extend({
     for (let i = groups[6]; i <= groups[7]; i++) {
       labels[i] = i;
     }
-    return A(labels.compact().map(label => ({
+    return EmberArray(labels.compact().map(label => ({
       label: label,
       isLink: label !== notLinkLabel,
       isActive: label === currentPageNumber})
@@ -764,7 +764,7 @@ export default Component.extend({
     let filterString = get(this, 'filterString');
 
     if (!data) {
-      return A([]);
+      return EmberArray([]);
     }
 
     let _processedColumns = processedColumns;
@@ -789,11 +789,11 @@ export default Component.extend({
     });
 
     if (!useFilteringByColumns) {
-      return A(globalSearch);
+      return EmberArray(globalSearch);
     }
 
     // search by each column
-    return A(globalSearch.filter(row => {
+    return EmberArray(globalSearch.filter(row => {
       return _processedColumns.length ? _processedColumns.every(c => {
         const filterFor = get(c, 'filteredBy') || get(c, 'propertyName');
         if (filterFor) {
@@ -830,7 +830,7 @@ export default Component.extend({
     });
 
     let _filteredContent = filteredContent.slice();
-    return sortProperties.length ? A(_filteredContent.sort((row1, row2) => {
+    return sortProperties.length ? EmberArray(_filteredContent.sort((row1, row2) => {
       for (let i = 0; i < sortProperties.length; i++) {
         let [prop, direction] = sortProperties[i];
         let result = betterCompare(get(row1, prop), get(row2, prop));
@@ -860,7 +860,7 @@ export default Component.extend({
     if (get(arrangedContent, 'length') < pageSize) {
       return arrangedContent;
     }
-    return A(arrangedContent.slice(startIndex, startIndex + pageSize));
+    return EmberArray(arrangedContent.slice(startIndex, startIndex + pageSize));
   }),
 
   /**
@@ -934,7 +934,7 @@ export default Component.extend({
    * @name ModelsTable#pageSizeValues
    */
   pageSizeValues: computed(function() {
-    return A([10, 25, 50]);
+    return EmberArray([10, 25, 50]);
   }),
 
   /**
@@ -947,7 +947,7 @@ export default Component.extend({
    * @private
    */
   pageSizeOptions: computed(function() {
-    return A([]);
+    return EmberArray([]);
   }),
 
   /**
@@ -962,7 +962,7 @@ export default Component.extend({
       showAll: true,
       hideAll: true,
       restoreDefaults: true,
-      columnSets: A(get(this, 'columnSets') || [])
+      columnSets: EmberArray(get(this, 'columnSets') || [])
     });
   }),
 
@@ -1062,10 +1062,10 @@ export default Component.extend({
    * @private
    */
   _setupSelectedRows() {
-    set(this, '_selectedItems', A([]));
+    set(this, '_selectedItems', EmberArray([]));
     let preselectedItems = get(this, 'preselectedItems');
     if (isArray(preselectedItems)) {
-      set(this, '_selectedItems', A(preselectedItems));
+      set(this, '_selectedItems', EmberArray(preselectedItems));
       if (preselectedItems.length > 1 && !get(this, 'multipleSelected')) {
         warn('`multipleSelected` is set `true`, because you have provided multiple `preselectedItems`.');
         set(this, 'multipleSelected', true);
@@ -1074,7 +1074,7 @@ export default Component.extend({
   },
 
   _setupExpandedRows() {
-    set(this, '_expandedItems', A([]));
+    set(this, '_expandedItems', EmberArray([]));
   },
 
   /**
@@ -1098,7 +1098,7 @@ export default Component.extend({
   _setupColumns () {
     let self = this;
 
-    let nColumns = A(get(this, 'columns').map(column => {
+    let nColumns = EmberArray(get(this, 'columns').map(column => {
       let filterFunction = get(column, 'filterFunction');
       filterFunction = 'function' === typeOf(filterFunction) ? filterFunction : defaultFilter;
 
@@ -1135,9 +1135,9 @@ export default Component.extend({
         let predefinedFilterOptions = get(column, 'predefinedFilterOptions');
         let usePredefinedFilterOptions = 'array' === typeOf(predefinedFilterOptions);
         if (usePredefinedFilterOptions && get(predefinedFilterOptions, 'length')) {
-          const types = A(['object', 'instance']);
-          const allObjects = A(predefinedFilterOptions).every(option => types.includes(typeOf(option)) && option.hasOwnProperty('label') && option.hasOwnProperty('value'));
-          const allPrimitives = A(predefinedFilterOptions).every(option => !types.includes(typeOf(option)));
+          const types = EmberArray(['object', 'instance']);
+          const allObjects = EmberArray(predefinedFilterOptions).every(option => types.includes(typeOf(option)) && option.hasOwnProperty('label') && option.hasOwnProperty('value'));
+          const allPrimitives = EmberArray(predefinedFilterOptions).every(option => !types.includes(typeOf(option)));
           assert('`predefinedFilterOptions` should be an array of objects or primitives and not mixed', allObjects || allPrimitives);
           if (allPrimitives) {
             predefinedFilterOptions = predefinedFilterOptions.map(optionStrToObj);
@@ -1168,7 +1168,7 @@ export default Component.extend({
     set(this, 'processedColumns', nColumns);
 
     // Apply initial sorting
-    set(this, 'sortProperties', A());
+    set(this, 'sortProperties', EmberArray());
     const filteredOrderedColumns = nColumns.sortBy('sortPrecedence').filter(col => isSortedByDefault(col));
     filteredOrderedColumns.forEach(column => {
       self.send('sort', column);
@@ -1273,7 +1273,7 @@ export default Component.extend({
     });
     delete sortPropertiesMap[sortedBy];
 
-    let newSortProperties = A([]);
+    let newSortProperties = EmberArray([]);
     keys(sortPropertiesMap).forEach(propertyName => {
       if (propertyName !== sortedBy) {
         newSortProperties.pushObject(`${propertyName}:${sortPropertiesMap[propertyName]}`);
@@ -1382,7 +1382,7 @@ export default Component.extend({
    * @private
    */
   collapseRow: observer('currentPageNumber', 'pageSize', function () {
-    set(this, '_expandedItems', A([]));
+    set(this, '_expandedItems', EmberArray([]));
   }),
 
   /**
@@ -1431,7 +1431,7 @@ export default Component.extend({
     },
 
     hideAllColumns () {
-      A(get(this, 'processedColumns').filterBy('mayBeHidden')).setEach('isHidden', true);
+      EmberArray(get(this, 'processedColumns').filterBy('mayBeHidden')).setEach('isHidden', true);
       this._sendColumnsVisibilityChangedAction();
     },
 
@@ -1453,8 +1453,8 @@ export default Component.extend({
         return run(this, showColumns, columns);
       }
 
-      let setColumns = A([]);
-      let otherColumns = A([]);
+      let setColumns = EmberArray([]);
+      let otherColumns = EmberArray([]);
 
       columns.forEach((column) => {
         let columnId = get(column, 'propertyName');
@@ -1463,7 +1463,7 @@ export default Component.extend({
           return;
         }
 
-        showColumns = A(showColumns);
+        showColumns = EmberArray(showColumns);
         if (showColumns.includes(columnId)) {
           setColumns.pushObject(column);
         } else {
@@ -1601,13 +1601,13 @@ export default Component.extend({
       let visibleContent = get(this, 'visibleContent');
       if (multipleExpand) {
         expandedRowIndexes.clear();
-        set(this, '_expandedItems', A(visibleContent.slice()));
+        set(this, '_expandedItems', EmberArray(visibleContent.slice()));
         this.userInteractionObserver();
       }
     },
 
     collapseAllRows() {
-      set(this, '_expandedItems', A());
+      set(this, '_expandedItems', EmberArray());
       this.userInteractionObserver();
     },
 
@@ -1667,7 +1667,7 @@ export default Component.extend({
         get(this, '_selectedItems').clear();
       }
       else {
-        set(this, '_selectedItems', A(data.slice()));
+        set(this, '_selectedItems', EmberArray(data.slice()));
       }
       this.userInteractionObserver();
     }
