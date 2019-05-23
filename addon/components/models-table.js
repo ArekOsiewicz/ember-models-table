@@ -3,7 +3,8 @@ import fmt from '../utils/fmt';
 import assignPoly from '../utils/assign-poly';
 import betterCompare from '../utils/better-compare';
 import { A as EmberArray } from '@ember/array';
-import { jQuery as jQ } from 'jquery';
+import { computed } from '@ember/object';
+
 
 import layout from '../templates/components/models-table';
 import ModelsTableColumn from '../-private/column';
@@ -25,7 +26,6 @@ const {
   getWithDefault,
   setProperties,
   getProperties,
-  computed,
   observer,
   isNone,
   isBlank,
@@ -35,6 +35,7 @@ const {
   run,
   Component,
   assert,
+  $: jQ,
   String: S,
   Object: O,
   isArray,
@@ -146,7 +147,7 @@ function optionStrToObj(option) {
  * where data is component's <code>data</code>
  */
 function getFilterOptionsCP(propertyName) {
-  return computed(`data.@each.${propertyName}`, function () {
+  return computed(`data.@each.${propertyName}`,function () {
     let data = get(this, 'data');
     let predefinedFilterOptions = get(this, 'predefinedFilterOptions');
     let filterWithSelect = get(this, 'filterWithSelect');
@@ -1153,7 +1154,8 @@ export default Component.extend({
         }
         else {
           if (propertyName) {
-            set(c, 'filterOptions', getFilterOptionsCP(propertyName));
+              c.reopen({"filterOptions":getFilterOptionsCP(propertyName)})
+            //set(c, 'filterOptions', getFilterOptionsCP(propertyName));
           }
         }
       }
